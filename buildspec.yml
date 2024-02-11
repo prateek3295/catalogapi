@@ -19,5 +19,5 @@ phases:
       - echo "Tagging Docker image for ECR.."
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:latest
       - echo "Pushing Docker image to ECR.."
-      - docker push  $REPOSITORY_URI:$IMAGE_TAG
+      - docker push  $REPOSITORY_URI:latest
       - echo "Done."
