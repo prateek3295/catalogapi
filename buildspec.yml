@@ -1,8 +1,4 @@
 version: 0.2
-env:
-  variables:
-    ECR_REPO: 
-    ECR_REGION: us-east-1
 phases:
   pre_build:
     commands:
