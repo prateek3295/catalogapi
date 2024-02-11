@@ -2,6 +2,7 @@ version: 0.2
 env:
   variables:
     ECR_REPO: 654654426811.dkr.ecr.us-east-1.amazonaws.com/catalog-service
+    ECR_REGION: us-east-1
 phases:
   build:
     commands:
@@ -10,7 +11,7 @@ phases:
       - echo "Tagging Docker image for ECR.."
       - docker tag catalogservice ${ECR_REPO}:${CODEBUILD_SOURCE_VERSION}
       - echo "Logging into ECR.."
-      - $(aws ecr get-login --no-include-email)
+      - $(aws ecr get-login-password --region $ECR_REGION | docker login --username AWS --password-stdin 654654426811.dkr.ecr.us-east-1.amazonaws.com)
       - echo "Pushing Docker image to ECR.."
       - docker push ${ECR_REPO}:${CODEBUILD_SOURCE_VERSION}
       - echo "Done."
