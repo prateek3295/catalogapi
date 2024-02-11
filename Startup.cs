@@ -47,8 +47,8 @@ namespace Catalog.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalog.API", Version = "v1" });
             });
 
-            services.AddHealthChecks()
-                    .AddMongoDb(Configuration["DatabaseSettings:ConnectionString"], "MongoDb Health", HealthStatus.Degraded);
+            services.AddHealthChecks();
+                   // .AddMongoDb(Configuration["DatabaseSettings:ConnectionString"], "MongoDb Health", HealthStatus.Degraded);
 
             services.AddCors(options =>
             {
@@ -81,7 +81,7 @@ namespace Catalog.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();                
-                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                endpoints.MapHealthChecks("/api/status", new HealthCheckOptions()
                 {
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
