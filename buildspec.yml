@@ -17,7 +17,7 @@ phases:
       - echo "Building a Docker image.."
       - docker build -t $REPOSITORY_URI:latest --file Dockerfile .
       - echo "Tagging Docker image for ECR.."
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:latest
       - echo "Pushing Docker image to ECR.."
       - docker push  $REPOSITORY_URI:$IMAGE_TAG
       - echo "Done."
