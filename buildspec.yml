@@ -3,9 +3,6 @@ env:
   variables:
     ECR_REPO: 654654426811.dkr.ecr.us-east-1.amazonaws.com/catalog-service
 phases:
-  install:
-    runtime-versions:
-      docker: 18
   build:
     commands:
       - echo "Building a Docker image.."
