@@ -1,17 +1,23 @@
 version: 0.2
 env:
   variables:
-    ECR_REPO: 654654426811.dkr.ecr.us-east-1.amazonaws.com/catalog-service
+    ECR_REPO: 
     ECR_REGION: us-east-1
 phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 654654426811.dkr.ecr.us-east-1.amazonaws.com
+      - REPOSITORY_URI=654654426811.dkr.ecr.us-east-1.amazonaws.com/catalog-service
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
   build:
     commands:
       - echo "Building a Docker image.."
       - docker build -t catalogservice . --file Dockerfile
       - echo "Tagging Docker image for ECR.."
-      - docker tag catalogservice ${ECR_REPO}:${CODEBUILD_SOURCE_VERSION}
-      - echo "Logging into ECR.."
-      - $(aws ecr get-login-password --region $ECR_REGION | docker login --username AWS --password-stdin 654654426811.dkr.ecr.us-east-1.amazonaws.com)
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
       - echo "Pushing Docker image to ECR.."
-      - docker push ${ECR_REPO}:${CODEBUILD_SOURCE_VERSION}
+      - docker push  $REPOSITORY_URI:$IMAGE_TAG
       - echo "Done."
