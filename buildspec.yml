@@ -15,5 +15,10 @@ phases:
       - echo "Pushing Docker image to ECR.."
       - docker push  $REPOSITORY_URI:latest
       - echo "Done."
+  post_build:
+    commands:
+      - echo Writing image definitions file...
+      - printf '[{"name":"catalog-service","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - cat imagedefinitions.json
 artifacts:
   files: imagedefinitions.json
