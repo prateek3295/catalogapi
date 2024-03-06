@@ -15,3 +15,5 @@ phases:
       - echo "Pushing Docker image to ECR.."
       - docker push  $REPOSITORY_URI:latest
       - echo "Done."
+artifacts:
+  files: imagedefinitions.json
