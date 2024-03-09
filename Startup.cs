@@ -78,8 +78,6 @@ namespace Catalog.API
 
             app.UseCors("AllowOrigin");
 
-            //app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
