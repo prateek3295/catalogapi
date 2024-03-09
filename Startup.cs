@@ -7,11 +7,13 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System.Linq;
 
 namespace Catalog.API
 {
@@ -80,11 +82,26 @@ namespace Catalog.API
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();                
-                endpoints.MapHealthChecks("/api/status", new HealthCheckOptions()
+                endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
                 {
-                    Predicate = _ => true,
-                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                    ResponseWriter = async (context, report) =>
+                    {
+                        var result = System.Text.Json.JsonSerializer.Serialize(
+                            new
+                            {
+                                status = report.Status.ToString(),
+                                checks = report.Entries.Select(entry => new
+                                {
+                                    name = entry.Key,
+                                    status = entry.Value.Status.ToString(),
+                                    description = entry.Value.Description
+                                })
+                            });
+
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync(result);
+                    }
                 });
             });
         }
