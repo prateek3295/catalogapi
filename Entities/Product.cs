@@ -11,10 +11,14 @@ namespace Catalog.API.Entities
 
         [BsonElement("Name")]
         public string Name { get; set; }
+        public string Brand { get; set; }
         public string Category { get; set; }
+        public string[] Categories { get; set; }
+        public int Rating { get; set; } 
         public string Summary { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
+        public bool InStock { get; set; }
 
         public string ImageS3Key { get; set; }
         public decimal Price { get; set; }

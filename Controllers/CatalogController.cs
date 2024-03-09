@@ -57,7 +57,7 @@ namespace Catalog.API.Controllers
         [HttpGet("{id:length(24)}", Name = "GetProduct")]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<Product>> GetProductById(string id)
+        public async Task<ActionResult<ProductDto>> GetProductById(string id)
         {
             var product = await _repository.GetProduct(id);
 
@@ -67,7 +67,18 @@ namespace Catalog.API.Controllers
                 return NotFound();
             }
 
-            return Ok(product);
+            var response = new ProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                ImagePreSignedUrl = _s3Service.GeneratePresignedUrl(product.ImageS3Key),
+                Summary = product.Summary,
+                Category = product.Category,
+                Description = product.Description,
+            };
+
+            return Ok(response);
         }
 
         [Route("[action]/{category}", Name = "GetProductByCategory")]
