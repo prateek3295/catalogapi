@@ -80,7 +80,8 @@ namespace Catalog.API.Controllers
                 Category = product.Category,
                 Description = product.Description,
                 Rating = product.Rating,
-                InStock = product.InStock
+                InStock = product.InStock,
+                Brand = product.Brand
             };
 
             return Ok(response);
