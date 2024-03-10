@@ -44,10 +44,13 @@ namespace Catalog.API.Controllers
                     Id = product.Id,
                     Name = product.Name,
                     Price = product.Price,
-                    ImagePreSignedUrl = _s3Service.GeneratePresignedUrl(product.ImageS3Key),
+                    ImagePreSignedUrl = _s3Service.GetCloudFrontUrl(product.ImageS3Key),
                     Summary = product.Summary,
                     Category = product.Category,
                     Description = product.Description,
+                    InStock = product.InStock,
+                    Rating = product.Rating,
+                    Brand = product.Brand,
                 });
             });
 
@@ -72,10 +75,12 @@ namespace Catalog.API.Controllers
                 Id = product.Id,
                 Name = product.Name,
                 Price = product.Price,
-                ImagePreSignedUrl = _s3Service.GeneratePresignedUrl(product.ImageS3Key),
+                ImagePreSignedUrl = _s3Service.GetCloudFrontUrl(product.ImageS3Key),
                 Summary = product.Summary,
                 Category = product.Category,
                 Description = product.Description,
+                Rating = product.Rating,
+                InStock = product.InStock
             };
 
             return Ok(response);
@@ -88,6 +93,15 @@ namespace Catalog.API.Controllers
         {
             var products = await _repository.GetProductByCategory(category);
             return Ok(products);
+        }
+
+        [Route("[action]", Name = "GetProductBrands")]
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductBrands()
+        {
+            var brands = await _repository.GetProductBrands();
+            return Ok(brands);
         }
 
         [Route("[action]/{name}", Name = "GetProductByName")]

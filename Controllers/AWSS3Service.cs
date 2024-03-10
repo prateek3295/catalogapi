@@ -11,11 +11,18 @@ public class AWSS3Service
 {
     private readonly IAmazonS3 _s3Client;
     private readonly string _bucketName;
+    private readonly string _cloudFrontUrl;
 
     public AWSS3Service(IAmazonS3 s3Client, IConfiguration configuration)
     {
         _s3Client = s3Client;
         _bucketName = configuration["AWS:S3:BucketName"];
+        _cloudFrontUrl = configuration["CloudFrontDomain"];
+    }
+
+    public AWSS3Service()
+    {
+
     }
 
     public async Task<string> UploadFileToS3Async(string filePath, string key)
@@ -28,19 +35,9 @@ public class AWSS3Service
         return $"https://{_bucketName}.s3.amazonaws.com/{key}";
     }
 
-    public string GeneratePresignedUrl(string objectKey)
+    public string GetCloudFrontUrl(string objectKey)
     {
-        
-        var request = new GetPreSignedUrlRequest
-        {
-            BucketName = _bucketName,
-            Key = objectKey,
-            Verb = HttpVerb.GET,
-            Expires = DateTime.UtcNow.AddHours(1) // Set the expiration time for the URL
-        };
-
-        var url = _s3Client.GetPreSignedURL(request);
-
-        return url;
+        string imageUrl = _cloudFrontUrl + objectKey;
+        return imageUrl;
     }
 }

@@ -82,5 +82,16 @@ namespace Catalog.API.Repositories
             return deleteResult.IsAcknowledged
                 && deleteResult.DeletedCount > 0;
         }
+
+        public async Task<IEnumerable<string>> GetProductBrands()
+        {
+            var distinctBrands = await _context.Products
+                .Distinct(p => p.Brand, _ => true)
+                .ToListAsync();
+
+            return distinctBrands;
+        }
+
+
     }
 }
