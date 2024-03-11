@@ -13,6 +13,7 @@
     <PackageReference Include="AWSSDK.S3" Version="3.7.305.17" />
     <PackageReference Include="MongoDB.Driver" Version="2.11.6" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.0.7" />
+    <PackageReference Include="OpenSearch.Client" Version="1.0.0" />
   </ItemGroup>
 
 

@@ -1,4 +1,5 @@
 using Amazon.S3;
+using Catalog.API.Controllers;
 using Catalog.API.Data;
 using Catalog.API.Data.Interfaces;
 using Catalog.API.Repositories;
@@ -42,6 +43,8 @@ namespace Catalog.API
             });
 
             services.AddSingleton<AWSS3Service>();
+
+            services.AddSingleton<OpenSearchService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

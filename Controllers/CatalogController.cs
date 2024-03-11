@@ -4,6 +4,8 @@ using Catalog.API.Repositories.Interfaces;
 using DnsClient.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OpenSearch.Client;
+using OpenSearch.Net;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,12 +22,14 @@ namespace Catalog.API.Controllers
         private readonly IProductRepository _repository;
         private readonly ILogger<CatalogController> _logger;
         private readonly AWSS3Service _s3Service;
+        private readonly OpenSearchService openSearchService;
 
-     public CatalogController(IProductRepository repository, ILogger<CatalogController> logger, AWSS3Service s3Service)
+        public CatalogController(IProductRepository repository, ILogger<CatalogController> logger, AWSS3Service s3Service, OpenSearchService openSearchService)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this._s3Service = s3Service;
+            this.openSearchService = openSearchService;
         }
 
         [HttpGet]
@@ -81,7 +85,8 @@ namespace Catalog.API.Controllers
                 Description = product.Description,
                 Rating = product.Rating,
                 InStock = product.InStock,
-                Brand = product.Brand
+                Brand = product.Brand,
+                Categories = product.Categories  
             };
 
             return Ok(response);
@@ -98,25 +103,31 @@ namespace Catalog.API.Controllers
 
         [Route("[action]", Name = "GetProductBrands")]
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProductBrands()
+        [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IEnumerable<string>>> GetProductBrands(string searchQuery)
         {
-            var brands = await _repository.GetProductBrands();
+            IEnumerable<string> brands = new List<string>();
+
+            if (string.IsNullOrEmpty(searchQuery))
+            {
+                brands = await _repository.GetProductBrands();
+            }
+            else
+            {
+                var filteredProducts = await openSearchService.FetchResultsFromOpenSearch(searchQuery);
+                brands = filteredProducts.Select(x => x.Brand).Distinct();
+            }
             return Ok(brands);
         }
 
-        [Route("[action]/{name}", Name = "GetProductByName")]
+        [Route("[action]", Name = "Search")]
         [HttpGet]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProductByName(string name)
+        [ProducesResponseType(typeof(IEnumerable<ProductDto>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IEnumerable<ProductDto>>> Search(string searchQuery)
         {
-            var items = await _repository.GetProductByName(name);
-            if (items == null)
-            {
-                _logger.LogError($"Products with name: {name} not found.");
-                return NotFound();
-            }
+            var items = await openSearchService.FetchResultsFromOpenSearch(searchQuery);
+           
             return Ok(items);
         }
 

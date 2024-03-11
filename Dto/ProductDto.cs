@@ -13,5 +13,6 @@
         public bool InStock { get; set; }
         public int Rating { get; set; }
         public string Brand { get; set; }
+        public string[] Categories { get; set; }
     }
 }
