@@ -41,7 +41,7 @@ namespace Catalog.API.Controllers
 
             var products = await _repository.GetProducts();
 
-            products.ToList().ForEach(product =>
+            products.ToList().Where(x=>x.Id != "65f03f7156406969ec06c169").ToList().ForEach(product =>
             {
                 productDtoList.Add(new ProductDto
                 {
@@ -115,7 +115,7 @@ namespace Catalog.API.Controllers
             else
             {
                 var filteredProducts = await openSearchService.FetchResultsFromOpenSearch(searchQuery);
-                brands = filteredProducts.Select(x => x.Brand).Distinct();
+                brands = filteredProducts.Where(x => x.Id != "65f03f7156406969ec06c169").Select(x => x.Brand).Distinct();
             }
             return Ok(brands);
         }
